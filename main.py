@@ -22,7 +22,7 @@ for title, description in test_cases.items():
     result = agent.invoke({"input": description})
     print(f"=== Result ===\n{result['output']}\n")
 
-    with open(f"report/{title}.txt", "w", encoding="utf-8") as f:
+    with open(f"report/{title}.md", "w", encoding="utf-8") as f:
         f.write(f"Test Case: {title}\nDescription:\n{description}\n\n=== Result ===\n{result['output']}\n")
 
     mcp_client.close()
