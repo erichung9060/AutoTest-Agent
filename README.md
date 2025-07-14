@@ -19,7 +19,3 @@ The `main.py` file demonstrates a QA testing scenario where the agent performs t
 3. Taps "Check now" and waits for 10 seconds.
 
 Expected results are validated, and retries are performed up to 5 times if the test fails.
-
-## Notes
-- The test strictly adheres to the expected results.
-- Element IDs are preferred over manual coordinates for interactions.
