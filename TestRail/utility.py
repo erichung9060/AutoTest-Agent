@@ -1,11 +1,10 @@
 from TestRail.restfulwebservice import  APIClient,APIError
 import json
+import os
 
-
-url = 'https://testrail-tools.trendmicro.com'
-client = APIClient(url)
-client.user = 'eric_hung@trendmicro.com'
-client.password = 'ouwcAPBvhm9t99nlGJRo-y.LCwLNbZ4ZFjJtsKokj'
+client = APIClient(os.environ.get('TESTRAIL_URL'))
+client.user = os.environ.get('TESTRAIL_EMAIL')
+client.password = os.environ.get('TESTRAIL_API_KEY')
 
 # print(json.dumps(client.get_sections(623,401816), indent=2))
 # print(json.dumps(client.get_cases(623, 401816, 16233670), indent=2))

@@ -52,7 +52,7 @@ class MCPClient:
                     image = result['result']['content'][0]['data']
                     result['result']['content'][0]['data'] = self.resize_image(image, 0.5, 10)
             except Exception as e:
-                print(f"Error processing image data: {e}")
+                pass
 
             return result
 

@@ -26,13 +26,14 @@ If the expected result is not obtained, please retry up to 5 times before finish
     agent = create_agent_executor(generated_tools)
     # agent = create_agent_executor(generated_tools, model="gpt-4o")
 
-    try:
-        result = agent.invoke({"input": user_input})
+    result = agent.invoke({"input": user_input})
+    print(f"=== Result ===\n{result['output']}\n")
 
-        with open(f"report/{title}.txt", "w", encoding="utf-8") as f:        
-            f.write(f"Test Case: {title}\nDescription:\n{description}\n\n=== Result ===\n{result['output']}\n")
+    with open(f"report/{title}.txt", "w", encoding="utf-8") as f:
+        f.write(f"Test Case: {title}\nDescription:\n{description}\n\n=== Result ===\n{result['output']}\n")
 
-    except Exception as e:
-        print(f"Error during agent execution: {e}")
-        
     mcp_client.close()
+
+    break
+        
+    
