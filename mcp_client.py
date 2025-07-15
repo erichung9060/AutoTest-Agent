@@ -3,11 +3,8 @@ import threading
 import json
 from jsonschema import ValidationError, validate
 from langchain.tools import Tool
-import tiktoken
-import base64, io
-from PIL import Image
-from io import BytesIO
 import re
+from agents.image_summarizer import ImageSummarizer
 
 class MCPClient:
     def __init__(self):
@@ -21,6 +18,7 @@ class MCPClient:
         )
         self.lock = threading.Lock()
         self._id = 1
+        self.image_summarizer = ImageSummarizer()
 
     def send_json_rpc(self, method: str, params: dict) -> dict:
         with self.lock:
@@ -50,8 +48,10 @@ class MCPClient:
                 resulttype = result['result']['content'][0]['type']
                 if resulttype == 'image':
                     image = result['result']['content'][0]['data']
-                    result['result']['content'][0]['data'] = self.resize_image(image, 0.5, 10)
-            except Exception as e:
+                    image_summary = self.image_summarizer.summarize(image)
+                    result['result']['content'][0]['data'] = image_summary
+                    result['result']['content'][0]['type'] = 'text'
+            except Exception:
                 pass
 
             return result
@@ -107,28 +107,3 @@ class MCPClient:
         tool_input = json.loads(tool_input)
         return tool_input
         
-    def resize_image(self, image, resize_factor=0.5, quality=20):
-        print("Processing image compressed...")
-        image_data = base64.b64decode(image)
-        image = Image.open(BytesIO(image_data))
-        
-        # resize
-        new_size = (int(image.width * resize_factor), int(image.height * resize_factor))
-        image = image.resize(new_size, Image.Resampling.LANCZOS)
-        
-        if image.mode in ("RGBA", "P"):
-            image = image.convert("RGB")
-        
-        buffer = BytesIO()
-        image.save(buffer, format="JPEG", quality=quality)
-        compressed_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
-        
-        with open("screenshot.jpg", "wb") as f:
-            f.write(buffer.getvalue())
-
-        enc = tiktoken.encoding_for_model("gpt-4")
-        tokens = enc.encode(compressed_image)
-        token_count = len(tokens)
-        print(f"Compressed Token Count: {token_count}")
-
-        return compressed_image
