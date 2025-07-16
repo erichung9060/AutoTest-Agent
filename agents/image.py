@@ -1,21 +1,14 @@
-import os
-from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
+from agents.Agent import Agent
 
 
-class ImageSummarizer:
-    def __init__(self):
-        self.llm = ChatOpenAI(
-            openai_api_base=os.getenv("OPENAI_API_BASE"),
-            openai_api_key=os.getenv("OPENAI_API_KEY"),
-            model_name="claude-4-sonnet",
-            temperature=0.0
-        )
-    
+class ImageSummarizeAgent(Agent):
+    def __init__(self, model="claude-4-sonnet"):
+        super().__init__(model)
+        print(f"Initialized ImageSummarizeAgent with model: {self.model}")
+        
     def summarize(self, base64_image: str) -> str:
-        try:
-            print("Summarizing image with Claude-4-Sonnet...")
-            
+        try:            
             message = HumanMessage(
                 content=[
                     {

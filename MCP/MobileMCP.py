@@ -1,12 +1,11 @@
 import subprocess
 import threading
 import json
-from jsonschema import ValidationError, validate
 from langchain.tools import Tool
+from agents.image import ImageSummarizeAgent
 import re
-from agents.image_summarizer import ImageSummarizer
 
-class MCPClient:
+class MobileMCP:
     def __init__(self):
         self.process = subprocess.Popen(
             ["npx", "@mobilenext/mobile-mcp@latest"],
@@ -18,7 +17,8 @@ class MCPClient:
         )
         self.lock = threading.Lock()
         self._id = 1
-        self.image_summarizer = ImageSummarizer()
+        
+        self.image_summarizer = ImageSummarizeAgent("claude-3.5-sonnet")
 
     def send_json_rpc(self, method: str, params: dict) -> dict:
         with self.lock:
@@ -43,18 +43,7 @@ class MCPClient:
                 if line.strip().endswith("}"):
                     break
             
-            result = json.loads(output)
-            try:
-                resulttype = result['result']['content'][0]['type']
-                if resulttype == 'image':
-                    image = result['result']['content'][0]['data']
-                    image_summary = self.image_summarizer.summarize(image)
-                    result['result']['content'][0]['data'] = image_summary
-                    result['result']['content'][0]['type'] = 'text'
-            except Exception:
-                pass
-
-            return result
+            return json.loads(output)
 
     def close(self):
         self.process.stdin.close()
@@ -80,10 +69,25 @@ class MCPClient:
 
                     processed_input = self.process_tool_input(tool_input)
 
-                    return self.send_json_rpc("tools/call", {
+                    result = self.send_json_rpc("tools/call", {
                         "name": method_name,
                         "arguments": processed_input
                     })
+                    
+                    try:
+                        content = result['result']['content'][0]
+                        resulttype = content.get('type')
+                        if resulttype == 'image':
+                            image = content.get('data')
+                            image_summary = self.image_summarizer.summarize(image)
+                            content['data'] = image_summary
+                            content['type'] = 'text'
+                            if 'mimeType' in content:
+                                del content['mimeType']
+                    except Exception:
+                        pass
+                        
+                    return result
                 return tool_func
 
             tool_description = "\n".join([f"{k}: {v}" for k, v in tool.items()])
