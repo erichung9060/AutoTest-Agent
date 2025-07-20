@@ -3,7 +3,7 @@ from agents.Agent import Agent
 
 
 class ImageSummarizeAgent(Agent):
-    def __init__(self, model="claude-4-sonnet"):
+    def __init__(self, model="gpt-4o"):
         super().__init__(model)
         print(f"Initialized ImageSummarizeAgent with model: {self.model}")
         
@@ -31,4 +31,4 @@ class ImageSummarizeAgent(Agent):
             
         except Exception as e:
             print(f"Error summarizing image: {e}")
-            return f"圖片處理失敗: {str(e)}"
+            return f"Image processing failed: {str(e)}"
