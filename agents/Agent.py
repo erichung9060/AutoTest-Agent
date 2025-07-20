@@ -21,7 +21,12 @@ class Agent:
 class ReActAgent(Agent):
     def __init__(self, model="claude-4-sonnet"):
         super().__init__(model)
+        self.mcp_manager = None
         self.agent = self.create_react_agent()
+    
+    def __del__(self):
+        if self.mcp_manager:
+            self.mcp_manager.close_all()
 
     def create_react_agent(self):
         custom_template = '''Do the following task as best you can. You have access to the following tools:
@@ -53,9 +58,9 @@ Final Answer: <your final answer here>
             input_variables=["tools", "tool_names", "input", "agent_scratchpad"]
         )
         
-        from MCP.MobileMCP import MobileMCP
-        self.mcp_client = MobileMCP()
-        self.tools = self.mcp_client.generate_tools()
+        from MCP.MCP_Manager import MCPManager
+        self.mcp_manager = MCPManager()
+        self.tools = self.mcp_manager.get_all_tools()
         
         react_agent = create_react_agent(self.llm, self.tools, prompt)
         
