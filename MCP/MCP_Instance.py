@@ -56,7 +56,7 @@ class MCPInstance:
         return json.loads(output)
 
     def close(self):
-        if self.process:
+        if self.process is None and self.process.poll() is not None:
             self.process.stdin.close()
             self.process.terminate()
 
