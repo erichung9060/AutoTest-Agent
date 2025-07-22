@@ -1,8 +1,8 @@
-from langgraph_core import LangGraphTestRunner
-from TestRail.utility import get_test_cases_description
-
 from dotenv import load_dotenv
 load_dotenv()
+
+from langgraph_core import LangGraphTestRunner
+from TestRail.utility import get_test_cases_description
 
 project_id = 623
 suite_id = 401816
