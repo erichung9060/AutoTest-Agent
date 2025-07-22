@@ -25,10 +25,10 @@ class MCPInstance:
                 text=True,
                 bufsize=1
             )
-            print(f"✅ MCP Server '{self.name}' started with command: {' '.join(cmd)}")
+            print(f"MCP Server '{self.name}' started with command: {' '.join(cmd)}")
             return True
         except Exception as e:
-            print(f"❌ Failed to start MCP Server '{self.name}': {e}")
+            print(f"Failed to start MCP Server '{self.name}': {e}")
             return False
 
     def send_json_rpc(self, method: str, params: dict) -> dict:

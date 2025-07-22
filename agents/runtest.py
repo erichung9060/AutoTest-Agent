@@ -7,15 +7,18 @@ class RunTestAgent(ReActAgent):
         
     def run(self, title: str, description: str) -> dict:
         prompt = f"""
-You are a QA tester using mobile MCP to control a phone. 
-The app to be tested is already opened. 
+        You are a QA tester using the mobile MCP to control a phone.
+        First, open the ScamCheck app.
+        Then, execute the following test case:
 
-Test Title: {title}
-Test Description: {description}
+        Test Title: {title}
+        Test Description: {description}
 
-Please execute this test step by step using available MCP tools.
-Finally, output a execution result.
-If the expected result is not obtained, please retry up to 3 times before finishing.
+        Please perform this test step by step using the available MCP tools.
+        At the end, provide the execution result.
+        If the expected result is not achieved, retry up to 3 times before finishing.
+        Prefer using XML to locate elements and perform actions on them.
+        Only use coordinate-based clicks if absolutely necessary.
         """
         try:
             run_result = self.agent.invoke({"input": prompt})

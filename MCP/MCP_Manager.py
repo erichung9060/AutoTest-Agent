@@ -41,7 +41,7 @@ class MCPManager:
             tools = instance.generate_tools()
             self.all_tools.extend(tools)
             
-        print(f"✅ Total {len(self.all_tools)} tools loaded from {len(self.mcp_instances)} MCP servers")
+        print(f"Total {len(self.all_tools)} tools loaded from {len(self.mcp_instances)} MCP servers")
         return self.all_tools
     
     def close_all(self):

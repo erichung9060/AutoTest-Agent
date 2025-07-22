@@ -1,6 +1,4 @@
-from agents.runtest import RunTestAgent
-from agents.judge import JudgeAgent
-
+from langgraph_core import LangGraphTestRunner
 from TestRail.utility import get_test_cases_description
 
 from dotenv import load_dotenv
@@ -10,19 +8,25 @@ project_id = 623
 suite_id = 401816
 section_id = 16233670
 
-run_test_agent = RunTestAgent()
-judge_agent = JudgeAgent()
+test_runner = LangGraphTestRunner()
+
+print("Generating workflow diagram...")
+test_runner.generate_workflow_diagram("workflow_diagram.png")
+print()
 
 test_cases = get_test_cases_description(project_id, suite_id, section_id)
 for title, description in test_cases.items():
     description = description.replace("green", "blue")
     print(f"Test Case: {title}\nDescription:\n{description}\n")
     
-    run_result = run_test_agent.run(title, description)
-    print(f"=== Result ===\n{run_result}\n")
+    workflow_result = test_runner.run_test_workflow(title, description)
     
-    judge_result = judge_agent.judge_test_result(title, description, run_result)
-    print(f"=== Judge Result ===\n{judge_result}\n")
+    print(f"=== Workflow Result ===")
+    print(f"Status: {workflow_result['status']}")
+    print(f"Retry Count: {workflow_result['retry_count']}")
+    print(f"Test Result: {workflow_result['test_result']}")
+    print(f"Final Result: {workflow_result['final_result']}")
+    print()
 
     break
 
