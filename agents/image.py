@@ -1,12 +1,14 @@
 from langchain.schema import HumanMessage
 from agents.Agent import Agent
+from functools import lru_cache
 
 
 class ImageSummarizeAgent(Agent):
-    def __init__(self, model="gpt-4o"):
+    def __init__(self, model="gpt-4o-mini"):
         super().__init__(model)
         print(f"Initialized ImageSummarizeAgent with model: {self.model}")
         
+    @lru_cache(maxsize=128)
     def summarize(self, base64_image: str) -> str:
         try:            
             message = HumanMessage(
