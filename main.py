@@ -15,19 +15,20 @@ test_runner.generate_workflow_diagram("workflow_diagram.png")
 print()
 
 test_cases = get_test_cases_description(project_id, suite_id, section_id)
+results = []
+
 for title, description in test_cases.items():
-    description = description.replace("green", "blue")
     print(f"Test Case: {title}\nDescription:\n{description}\n")
     
     workflow_result = test_runner.run_test_workflow(title, description)
     
-    print(f"=== Workflow Result ===")
-    print(f"Status: {workflow_result['status']}")
-    print(f"Retry Count: {workflow_result['retry_count']}")
-    print(f"Test Result: {workflow_result['test_result']}")
-    print(f"Final Result: {workflow_result['final_result']}")
-    print()
+    result_entry = {
+        "title": title,
+        "passed": workflow_result["passed"],
+    }
+    results.append(result_entry)
+    # reset node
 
-    break
-
-print("All test cases processed.")
+print("=== All Test Case Results ===")
+for entry in results:
+    print(f"{'✅' if entry['passed'] else '❌'}: {entry['title']}")

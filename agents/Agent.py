@@ -29,30 +29,30 @@ class ReActAgent(Agent):
             self.mcp_manager.close_all()
 
     def create_react_agent(self):
-        custom_template = '''Do the following task as best you can. You have access to the following tools:
+        custom_template = '''
+        Do the following task as best you can. You have access to the following tools:
+        {tools}
+        
+        Use ReAct methodology - think through each step, take actions, observe results.
 
-{tools}
+        Use the following format:
+        Question: the input question you must answer
+        Thought: you should always think about what to do
+        Action: the action to take, should be one of [{tool_names}]
+        Action Input: the input to the action
+        Observation: the result of the action
+        ... (this Thought/Action/Action Input/Observation can repeat N times)
+        Thought: I now know the final answer
+        Final Answer: the final answer to the original input question
 
-Use ReAct methodology - think through each step, take actions, observe results.
+        Begin!
 
-Use the following format:
-Question: the input question you must answer
-Thought: you should always think about what to do
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action
-Observation: the result of the action
-... (this Thought/Action/Action Input/Observation can repeat N times)
-Thought: I now know the final answer
-Final Answer: the final answer to the original input question
+        Question: {input}
+        Thought:{agent_scratchpad}
 
-Begin!
-
-Question: {input}
-Thought:{agent_scratchpad}
-
-If you know the final answer, remember to output it in this format:
-Final Answer: <your final answer here>
-'''
+        If you know the final answer, remember to output it in this format:
+        Final Answer: <your final answer here>
+        '''
         prompt = PromptTemplate(
             template=custom_template,
             input_variables=["tools", "tool_names", "input", "agent_scratchpad"]
