@@ -2,33 +2,33 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langgraph_core import LangGraphTestRunner
-from TestRail.utility import get_test_cases_description
+from TestRail.utility import get_test_cases_description, upload_test_results
 
-project_id = 623
-suite_id = 401816
-section_id = 16233670
+run_id = 808849
 
 test_runner = LangGraphTestRunner()
+# print("Generating workflow diagram...")
+# test_runner.generate_workflow_diagram("workflow_diagram.png")
 
-print("Generating workflow diagram...")
-test_runner.generate_workflow_diagram("workflow_diagram.png")
-print()
-
-test_cases = get_test_cases_description(project_id, suite_id, section_id)
+test_cases = get_test_cases_description(run_id)
 results = []
 
-for title, description in test_cases.items():
-    print(f"Test Case: {title}\nDescription:\n{description}\n")
-    
-    workflow_result = test_runner.run_test_workflow(title, description)
-    
+for title, case in test_cases.items():
+    print(f"Test Case: {title}\nDescription:\n{case['description']}\n")
+
+    workflow_result = test_runner.run_test_workflow(title, case['description'])
+
     result_entry = {
         "title": title,
-        "passed": workflow_result["passed"],
+        "case_id": case['case_id'],
+        "status_id": 1 if workflow_result['passed'] else 5,
     }
     results.append(result_entry)
     # reset node
+    # break
 
 print("=== All Test Case Results ===")
-for entry in results:
-    print(f"{'✅' if entry['passed'] else '❌'}: {entry['title']}")
+for result in results:
+    print(f"{'✅' if result['status_id'] == 1 else '❌'}: {result['title']}")
+
+upload_test_results(run_id, results)
