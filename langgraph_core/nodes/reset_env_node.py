@@ -24,6 +24,6 @@ def reset_env_node(state: WorkflowState) -> WorkflowState:
     except Exception as e:
         print(f"Unexpected error during restart: {e}")
     
-    state["status"] = "pending"
+    state["retry"] = False
     state["retry_count"] += 1
     return state

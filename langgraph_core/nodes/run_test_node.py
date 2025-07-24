@@ -9,12 +9,8 @@ def run_test_node(state: WorkflowState) -> WorkflowState:
     description = state["task_description"]
 
     run_test_agent = RunTestAgent()
-    
     run_result = run_test_agent.run(title, description)
-    # TODO: try catch in run
 
-
-    state["status"] = "test_completed"
     state["run_result"] = run_result
     
     return state

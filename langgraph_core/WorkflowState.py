@@ -7,5 +7,5 @@ class WorkflowState(TypedDict):
     run_result: str
     judge_result: str
     retry_count: int
-    status: str
+    retry: bool
     passed: bool

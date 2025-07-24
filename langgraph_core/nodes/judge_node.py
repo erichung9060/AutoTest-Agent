@@ -15,10 +15,9 @@ def judge_node(state: WorkflowState) -> WorkflowState:
     # TODO: try catch in judge_test_result
 
     if retry and state["retry_count"] < 2:
-        state["status"] = "retry"
+        state["retry"] = True
     else:
         judge_agent.save_report(title, description, run_result, judge_result, passed)
-        state["status"] = "completed"
         state["passed"] = passed
         state["judge_result"] = judge_result
 

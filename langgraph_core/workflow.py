@@ -4,7 +4,7 @@ from .WorkflowState import WorkflowState
 
 
 def route_after_judge(state: WorkflowState) -> str:
-    if state["status"] == "retry":
+    if state["retry"]:
         return "restart"
     else:
         return "end"
@@ -44,7 +44,7 @@ class LangGraphTestRunner:
             run_result="",
             judge_result="",
             retry_count=0,
-            status="pending",
+            retry=False,
             passed=False
         )
         
