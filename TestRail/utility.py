@@ -13,26 +13,29 @@ client.password = os.environ.get('TESTRAIL_API_KEY')
 # print(json.dumps(client.get_cases(623, 401816, 16233670), indent=2))
 # print(json.dumps(client.get_tests(808849), indent=2))
 
-
 def get_test_cases_description(run_id):
     print(f"Fetching test cases for run ID: {run_id}")
 
     test_cases = client.get_tests(run_id)
     result = {}
     for case in test_cases['data']:
-        title = case['title']
-        steps = case['custom_steps'].replace('\n', ', ').replace('\r', '')
-        expected = case['custom_expected'].replace('\n', ', ').replace('\r', '')
+        try:
+            title = case['title']
+            steps = case['custom_steps'].replace('\n', ', ').replace('\r', '')
+            expected = case['custom_expected'].replace('\n', ', ').replace('\r', '')
 
-        description = f"Steps: {steps}, \nExpected: {expected}"
-        result[title] = {"description": description, "case_id": case['case_id']}
+            description = f"Steps: {steps}, \nExpected: {expected}"
+            result[title] = {"description": description, "case_id": case['case_id']}
+            print(f"✅ Successfully fetched case {case['title']}")
+        except Exception as e:
+            print(f"❌ Error for case: {case['title']}: {e}")
+
     return result
 
-def upload_test_results(run_id, results):
-    print(f"Uploading test results for run ID: {run_id}")
+def upload_test_case_result(run_id, case_id, results):
+    print(f"Uploading test results for run ID: {run_id}, Case ID: {case_id}")
 
-    results = {"results": results}
-    response = client.add_results_for_cases(run_id, results)
+    response = client.add_result_for_case(run_id, case_id, results)
     if response['code'] == 0:
         print("✅ Test results uploaded successfully.")
     else:

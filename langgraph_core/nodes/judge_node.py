@@ -7,7 +7,7 @@ def judge_node(state: WorkflowState) -> WorkflowState:
     
     title = state["task_title"]
     description = state["task_description"]
-    run_result = state["test_result"]
+    run_result = state["run_result"]
 
     judge_agent = JudgeAgent()
     
@@ -20,5 +20,6 @@ def judge_node(state: WorkflowState) -> WorkflowState:
         judge_agent.save_report(title, description, run_result, judge_result, passed)
         state["status"] = "completed"
         state["passed"] = passed
+        state["judge_result"] = judge_result
 
     return state

@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langgraph_core import LangGraphTestRunner
-from TestRail.utility import get_test_cases_description, upload_test_results
+from TestRail.utility import get_test_cases_description, upload_test_case_result
 
 run_id = 808849
 
@@ -14,21 +14,23 @@ test_cases = get_test_cases_description(run_id)
 results = []
 
 for title, case in test_cases.items():
-    print(f"Test Case: {title}\nDescription:\n{case['description']}\n")
+    print(f"=== Running Test Case: {title} ===")
+    print(f"Description:\n{case['description']}\n")
 
     workflow_result = test_runner.run_test_workflow(title, case['description'])
 
     result_entry = {
         "title": title,
-        "case_id": case['case_id'],
         "status_id": 1 if workflow_result['passed'] else 5,
+        "comment": workflow_result['judge_result'],
     }
     results.append(result_entry)
-    # reset node
+    # TODO: reset node
+
+    upload_test_case_result(run_id, case['case_id'], result_entry)
     # break
 
 print("=== All Test Case Results ===")
 for result in results:
     print(f"{'✅' if result['status_id'] == 1 else '❌'}: {result['title']}")
 
-upload_test_results(run_id, results)

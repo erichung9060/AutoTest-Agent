@@ -10,11 +10,11 @@ def run_test_node(state: WorkflowState) -> WorkflowState:
 
     run_test_agent = RunTestAgent()
     
-    test_result = run_test_agent.run(title, description)
+    run_result = run_test_agent.run(title, description)
     # TODO: try catch in run
 
 
     state["status"] = "test_completed"
-    state["test_result"] = test_result
+    state["run_result"] = run_result
     
     return state

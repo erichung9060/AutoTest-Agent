@@ -41,7 +41,8 @@ class LangGraphTestRunner:
         initial_state = WorkflowState(
             task_title=task_title,
             task_description=task_description,
-            test_result="",
+            run_result="",
+            judge_result="",
             retry_count=0,
             status="pending",
             passed=False
