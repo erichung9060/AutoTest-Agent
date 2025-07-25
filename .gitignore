@@ -5,3 +5,5 @@ workspace.json
 report/*.md
 screenshots
 .vscode
+.claude
+.secrets
