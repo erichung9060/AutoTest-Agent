@@ -1,8 +1,8 @@
 name: Run Autotest Agent
 
 on:
-  push:
-    branches: [ main ]
+  # push:
+  #   branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -12,16 +12,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Check KVM availability
-        run: |
-          ls -l /dev/kvm || echo "KVM not available"
-          kvm-ok || echo "kvm-ok not available"
-
-      - name: Install ADB
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y adb
       
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
