@@ -13,6 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Install ADB
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y adb
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
@@ -22,7 +27,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Run autotest agent
         run: |
           python3 main.py
