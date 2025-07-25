@@ -13,11 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Check KVM availability
+        run: |
+          ls -l /dev/kvm || echo "KVM not available"
+          kvm-ok || echo "kvm-ok not available"
+
       - name: Install ADB
         run: |
           sudo apt-get update
           sudo apt-get install -y adb
-
+      
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
@@ -30,7 +35,7 @@ jobs:
 
       - name: Run autotest agent
         run: |
-          python3 main.py
+            python3 main.py
         env:
           OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
