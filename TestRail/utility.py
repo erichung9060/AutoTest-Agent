@@ -1,21 +1,35 @@
-from TestRail.restfulwebservice import  APIClient,APIError
-import json
-import os
-
 from dotenv import load_dotenv
 load_dotenv()
+
+try:
+    from TestRail.restfulwebservice import  APIClient,APIError
+except ImportError:
+    from restfulwebservice import APIClient, APIError
+import json
+import os
+from datetime import datetime
 
 client = APIClient(os.environ.get('TESTRAIL_URL'))
 client.user = os.environ.get('TESTRAIL_EMAIL')
 client.password = os.environ.get('TESTRAIL_API_KEY')
 
-# print(json.dumps(client.get_sections(623,401816), indent=2))
-# print(json.dumps(client.get_cases(623, 401816, 16233670), indent=2))
-# print(json.dumps(client.get_tests(808849), indent=2))
+def create_new_run(suite_id):
+    suit_data = client.get_suite(suite_id)['data']
+    project_id = suit_data['project_id']
+    name = suit_data['name'] + " " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    run_data = {
+        "name": name,
+        "suite_id": suite_id,
+        "include_all": True
+    }
+
+    run_id = client.add_run(project_id, run_data)['data']['id']
+    return run_id
 
 def get_test_cases_description(run_id):
     print(f"Fetching test cases for run ID: {run_id}")
-
+    
     test_cases = client.get_tests(run_id)
     result = {}
     for case in test_cases['data']:
