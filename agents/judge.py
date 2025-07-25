@@ -82,7 +82,8 @@ class JudgeAgent(ReActAgent):
 
 ## Test Case Information
 **Title:** {title}
-**Description:**  
+
+**Description:**\\
 {description}
 
 ## Execution Result

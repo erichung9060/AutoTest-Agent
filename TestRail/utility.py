@@ -21,9 +21,9 @@ def create_new_run(suite_id):
     run_data = {
         "name": name,
         "suite_id": suite_id,
-        "include_all": True
+        # "include_all": False,
+        # "case_ids": [332622135, 332622136, 332622137]
     }
-
     run_id = client.add_run(project_id, run_data)['data']['id']
     return run_id
 
