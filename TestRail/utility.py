@@ -46,8 +46,16 @@ def get_test_cases_description(run_id):
 
     return result
 
-def upload_test_case_result(run_id, case_id, results):
+def upload_test_case_result(run_id, case_id, workflow_result):
     print(f"Uploading test results for run ID: {run_id}, Case ID: {case_id}")
+
+    results = {
+    "status_id": 1 if workflow_result['passed'] else 5,
+    "comment": f"""
+{workflow_result['judge_result']}
+--------------------------------
+{workflow_result['run_result']}
+"""}
 
     response = client.add_result_for_case(run_id, case_id, results)
     if response['code'] == 0:

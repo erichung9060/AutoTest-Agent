@@ -18,19 +18,14 @@ for title, case in test_cases.items():
     print(f"Description:\n{case['description']}\n")
 
     workflow_result = test_runner.run_test_workflow(title, case['description'])
-
-    result_entry = {
-        "title": title,
-        "status_id": 1 if workflow_result['passed'] else 5,
-        "comment": workflow_result['judge_result'],
-    }
-    results.append(result_entry)
+    result = {"title": title, "passed": workflow_result['passed']}
+    results.append(result)
+    
+    upload_test_case_result(run_id, case['case_id'], workflow_result)
     # TODO: reset node
-
-    upload_test_case_result(run_id, case['case_id'], result_entry)
     # break
 
 print("=== All Test Case Results ===")
 for result in results:
-    print(f"{'✅' if result['status_id'] == 1 else '❌'}: {result['title']}")
+    print(f"{'✅' if result['passed'] else '❌'}: {result['title']}")
 
