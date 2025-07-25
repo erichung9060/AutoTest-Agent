@@ -15,7 +15,11 @@ class ImageSummarizeAgent(Agent):
                 content=[
                     {
                         "type": "text",
-                        "text": "Please describe the content of the image in as much detail as possible. Include all visible elements, text, layout, colors, and other details."
+                        "text": (
+                            "This is a screenshot of an app screen."
+                            "Please describe the detailed information shown in the image, including colors, text, layout, and any other visible details."
+                            "Focus only on describing the app's layout and content; do not describe the top bar."
+                        )
                     },
                     {
                         "type": "image_url",
