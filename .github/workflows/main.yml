@@ -1,0 +1,36 @@
+name: Run Autotest Agent
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ebf-pod-ubuntu-latest@${{ github.run_id }}-test
+    environment: AutoTest-Agent
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run autotest agent
+        run: |
+          python3 main.py
+        env:
+          OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TESTRAIL_URL: ${{ secrets.TESTRAIL_URL }}
+          TESTRAIL_EMAIL: ${{ secrets.TESTRAIL_EMAIL }}
+          TESTRAIL_API_KEY: ${{ secrets.TESTRAIL_API_KEY }}
+
+          SUITE_ID: 457904
