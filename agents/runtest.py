@@ -8,8 +8,8 @@ class RunTestAgent(ReActAgent):
     def run(self, title: str, description: str) -> dict:
         prompt = f"""
         You are a QA tester using the mobile MCP to control a phone.
-        First, open the ScamCheck app.
-        Then, execute the following test case:
+        The app, ScamCheck, is opened already.
+        You need to execute the following test case:
 
         Test Title: {title}
         Test Description: {description}
