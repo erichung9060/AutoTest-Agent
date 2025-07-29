@@ -73,15 +73,10 @@ runs:
         arch: arm64-v8a
         target: google_apis
         script: |
-          adb shell input keyevent 82
-          sleep 5
           adb install app.apk
-          adb shell pm list packages | grep fraudbuster
-          
-          # 直接啟動 SplashActivity
           adb shell am start -n com.trendmicro.fraudbuster/com.trendmicro.callblock.activity.SplashActivity
-          
-          sleep 5
+          robot -d NONE -o NONE -r NONE -l NONE setup_app.robot
+
           cd ${{ github.action_path }}
           python3 main.py
       env:
