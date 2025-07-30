@@ -3,3 +3,4 @@ langchain-openai
 langchain
 langgraph
 requests
+robotframework-appiumlibrary
