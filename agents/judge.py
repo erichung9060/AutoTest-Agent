@@ -71,7 +71,7 @@ class JudgeAgent(ReActAgent):
     def save_report(self, title, description, run_result, judge_result, passed):
         print(f"Saving report for test case: {title}")
 
-        timestamp = datetime.now(ZoneInfo('Asia/Taipei')).strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.now(ZoneInfo('Asia/Taipei')).strftime("%Y-%m-%d %H.%M.%S")
         screenshot_name = screenshot_name = f"{title}_{timestamp}.png"
         screenshot_path = self.take_screenshot(screenshot_name)
     
