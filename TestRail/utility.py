@@ -60,5 +60,16 @@ def upload_test_case_result(run_id, case_id, workflow_result):
     response = client.add_result_for_case(run_id, case_id, results)
     if response['code'] == 0:
         print("✅ Test results uploaded successfully.")
+
+        result_id = response['data']['id']
+        screenshot_path = os.path.join('screenshots', workflow_result['screenshot_path'])
+        
+        print(f"📸 Uploading screenshot: {screenshot_path}")
+        attachment_response = client.add_attachment_to_result(result_id, screenshot_path)
+        if attachment_response:
+            print("✅ Screenshot uploaded successfully.")
+        else:
+            print("❌ Failed to upload screenshot.")
+        
     else:
         print("❌ Failed to upload test results:", response)

@@ -66,15 +66,16 @@ class JudgeAgent(ReActAgent):
         match = re.search(r'NEED_RETRY:\s*\[?(Yes|No)\]?', judge_result, re.IGNORECASE)
         retry = True if match and match.group(1) == "Yes" else False
 
-        return passed, retry, judge_result
+        timestamp = datetime.now(ZoneInfo('Asia/Taipei')).strftime("%Y-%m-%d %H.%M.%S")
+        screenshot_name = f"{title}_{timestamp}.png"
+        screenshot_path = self.take_screenshot(screenshot_name)
+
+        return passed, retry, judge_result, screenshot_path
     
-    def save_report(self, title, description, run_result, judge_result, passed):
+    def save_report(self, title, description, run_result, judge_result, passed, screenshot_path):
         print(f"Saving report for test case: {title}")
 
         timestamp = datetime.now(ZoneInfo('Asia/Taipei')).strftime("%Y-%m-%d %H.%M.%S")
-        screenshot_name = screenshot_name = f"{title}_{timestamp}.png"
-        screenshot_path = self.take_screenshot(screenshot_name)
-    
         report_file_name = f"{'✅' if passed else '❌'} {title}_{timestamp}.md"
         os.makedirs("report", exist_ok=True)
         with open(f"report/{report_file_name}", "w", encoding="utf-8") as f:

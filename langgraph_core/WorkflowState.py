@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Optional
 
 
 class WorkflowState(TypedDict):
@@ -9,3 +9,4 @@ class WorkflowState(TypedDict):
     retry_count: int
     retry: bool
     passed: bool
+    screenshot_path: Optional[str]
