@@ -10,7 +10,7 @@ setup_agent = SetupAgent()
 result = setup_agent.run()
 
 test_runner = LangGraphTestRunner()
-test_runner.generate_workflow_diagram("workflow_diagram.png")
+# test_runner.generate_workflow_diagram("workflow_diagram.png")
 
 suite_id = os.environ.get('SUITE_ID')
 run_id = create_new_run(suite_id)
