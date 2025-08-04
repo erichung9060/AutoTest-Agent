@@ -5,6 +5,10 @@ import os
 from langgraph_core import LangGraphTestRunner
 from TestRail.utility import get_test_cases_description, upload_test_case_result, create_new_run
 
+from agents.setup import SetupAgent
+setup_agent = SetupAgent()
+result = setup_agent.run()
+
 test_runner = LangGraphTestRunner()
 test_runner.generate_workflow_diagram("workflow_diagram.png")
 

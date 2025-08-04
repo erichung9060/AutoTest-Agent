@@ -31,7 +31,7 @@ class MCPInstance:
             print(f"Failed to start MCP Server '{self.name}': {e}")
             return False
 
-    def send_json_rpc(self, method: str, params: dict) -> dict:
+    def process_mcp_request(self, method: str, params: dict) -> dict:
         request = {
             "jsonrpc": "2.0",
             "id": self._id,
@@ -53,7 +53,23 @@ class MCPInstance:
             if line.strip().endswith("}"):
                 break
         
-        return json.loads(output)
+        result = json.loads(output)
+        
+        # Process image content with summarizer
+        try:
+            content = result['result']['content'][0]
+            resulttype = content.get('type')
+            if resulttype == 'image':
+                image = content.get('data')
+                image_summary = self.image_summarizer.summarize(image)
+                content['data'] = image_summary
+                content['type'] = 'text'
+                if 'mimeType' in content:
+                    del content['mimeType']
+        except Exception:
+            pass
+        
+        return result
 
     def close(self):
         if self.process is None and self.process.poll() is not None:
@@ -62,7 +78,7 @@ class MCPInstance:
 
     def generate_tools(self) -> List[Tool]:
         try:
-            tools_list_response = self.send_json_rpc("tools/list", {})
+            tools_list_response = self.process_mcp_request("tools/list", {})
             tools_info = tools_list_response["result"]["tools"]
 
             print(f"✅ MCP Tools Loaded from '{self.name}':")
@@ -76,29 +92,12 @@ class MCPInstance:
 
                 def make_tool_func(method_name, mcp_instance):
                     def tool_func(tool_input=None):
-                        # if tool_input is None:
-                        #     tool_input = {}
+                        processed_input = self.preprocess_tool_input(tool_input)
 
-                        processed_input = self.process_tool_input(tool_input)
-
-                        result = mcp_instance.send_json_rpc("tools/call", {
+                        result = mcp_instance.process_mcp_request("tools/call", {
                             "name": method_name,
                             "arguments": processed_input
                         })
-                        
-                        try:
-                            content = result['result']['content'][0]
-                            resulttype = content.get('type')
-                            if resulttype == 'image':
-                                image = content.get('data')
-                                image_summary = mcp_instance.image_summarizer.summarize(image)
-                                content['data'] = image_summary
-                                content['type'] = 'text'
-                                if 'mimeType' in content:
-                                    del content['mimeType']
-                        except Exception:
-                            pass
-                            
                         return result
                     return tool_func
 
@@ -117,7 +116,7 @@ class MCPInstance:
             print(f"❌ Failed to generate tools for '{self.name}': {e}")
             return []
 
-    def process_tool_input(self, tool_input):
+    def preprocess_tool_input(self, tool_input):
         matches = re.findall(r"```json(.*?)```", tool_input, re.DOTALL)
         if matches:
             tool_input = matches[0]
