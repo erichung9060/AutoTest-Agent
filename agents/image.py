@@ -16,9 +16,13 @@ class ImageSummarizeAgent(Agent):
                     {
                         "type": "text",
                         "text": (
-                            "This is a screenshot of an app screen."
-                            "Please describe the detailed information shown in the image, including colors, text, layout, and any other visible details."
-                            "Focus only on describing the app's layout and content; do not describe the top bar."
+                            "This is a screenshot of an app screen. "
+                            "Please describe the detailed information shown in the image, including colors, text, layout, and any other visible details. "
+                            "Focus only on describing the app's layout and content; do not describe the top bar. "
+                            "\n\nIMPORTANT: If you see a toggle switch (a pill-shaped UI element with a circular dot inside), assume the following: "
+                            "if the dot is on the **left**, the switch is OFF; if the dot is on the **right**, the switch is ON. "
+                            "Also describe whether the toggle appears to be enabled or disabled based on its visual position and background color."
+                            "Do not infer the switch state based on subjective appearance; instead, use the circle's position as the rule."
                         )
                     },
                     {
