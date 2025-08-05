@@ -2,10 +2,9 @@
   "mcpServers": {
     "mobile-mcp": {
       "type": "stdio",
-      "command": "npx",
+      "command": "python3",
       "args": [
-        "-y",
-        "@mobilenext/mobile-mcp@latest"
+        "/Users/eric_hung/Desktop/android-mcp/main.py"
       ]
     },
     "sleep": {

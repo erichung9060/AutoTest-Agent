@@ -16,9 +16,8 @@ class RunTestAgent(ReActAgent):
 
         Please perform this test step by step using the available MCP tools.
         At the end, provide the execution result.
-        If the expected result is not achieved, retry up to 3 times before finishing.
         Prefer using XML to locate elements and perform actions on them.
-        Only use coordinate-based clicks if absolutely necessary.
+        If you cannot find the required element in the XML dump, take a screenshot of the current screen to help with further investigation.
         """
         try:
             run_result = self.agent.invoke({"input": prompt})

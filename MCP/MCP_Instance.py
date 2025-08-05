@@ -57,16 +57,20 @@ class MCPInstance:
         
         # Process image content with summarizer
         try:
-            content = result['result']['content'][0]
-            resulttype = content.get('type')
-            if resulttype == 'image':
-                image = content.get('data')
-                image_summary = self.image_summarizer.summarize(image)
-                content['data'] = image_summary
-                content['type'] = 'text'
-                if 'mimeType' in content:
-                    del content['mimeType']
-        except Exception:
+            if 'result' in result and 'content' in result['result']:
+                contents = result['result']['content']
+                for i, content in enumerate(contents):
+                    resulttype = content.get('type')
+                    if resulttype == 'image':
+                        image = content.get('data')
+                        if image:
+                            image_summary = self.image_summarizer.summarize(image)
+                            content['data'] = image_summary
+                            content['type'] = 'text'
+                            if 'mimeType' in content:
+                                del content['mimeType']
+        except Exception as e:
+            print(f"[{self.name}] Error processing image content: {e}")
             pass
         
         return result
@@ -78,6 +82,14 @@ class MCPInstance:
 
     def generate_tools(self) -> List[Tool]:
         try:
+            init_request = {
+                "jsonrpc": "2.0",
+                "method": "notifications/initialized",
+                "params": {}
+            }
+            self.process.stdin.write(json.dumps(init_request) + "\n")
+            self.process.stdin.flush()
+
             tools_list_response = self.process_mcp_request("tools/list", {})
             tools_info = tools_list_response["result"]["tools"]
 
@@ -116,10 +128,14 @@ class MCPInstance:
             print(f"❌ Failed to generate tools for '{self.name}': {e}")
             return []
 
-    def preprocess_tool_input(self, tool_input):
-        matches = re.findall(r"```json(.*?)```", tool_input, re.DOTALL)
-        if matches:
-            tool_input = matches[0]
-        tool_input = tool_input.strip()
-        tool_input = json.loads(tool_input)
-        return tool_input
+    def preprocess_tool_input(self, tool_input):    
+        try:
+            matches = re.findall(r"```json(.*?)```", tool_input, re.DOTALL)
+            if matches:
+                tool_input = matches[0]
+            tool_input = tool_input.strip()
+            tool_input = json.loads(tool_input)
+            return tool_input
+        except Exception as e:
+            print(f"Error preprocessing tool input: {e}")
+            return {}

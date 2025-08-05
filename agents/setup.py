@@ -1,4 +1,6 @@
+import subprocess
 from agents.Agent import ReActAgent
+import os
 
 class SetupAgent(ReActAgent):
     def __init__(self, model="claude-4-sonnet"):
@@ -7,40 +9,44 @@ class SetupAgent(ReActAgent):
         
     def run(self) -> dict:
         prompt = f"""
-        You are a setup assistant using the mobile MCP to control a phone.
-        You need to set up all necessary permissions for the opening app before running any tests.
+        You are a setup assistant using mobile MCP to control a phone. Set up all necessary permissions for the app.
 
-        Your task is to:
-        1. Check the current screen and identify any permission requests or setup prompts
-        2. Follow all on-screen instructions to grant necessary permissions
-        3. Navigate through any initial setup flows or tutorials
-        4. Ensure the app is ready for testing by reaching the main interface
-        5. Handle any system dialogs, permission requests, or notifications that appear
+        Tasks:
+        1. Identify permission requests or setup prompts
+        2. Grant all permissions (camera, location, notifications, etc.)
+        3. Navigate through setup flows/tutorials 
+        4. Reach the main interface
 
-        Important guidelines:
-        - Always read the screen content carefully before taking action
-        - Grant all permissions when prompted (camera, location, notifications, etc.)
-        - Skip or dismiss any optional tutorials or promotional content
-        - If you encounter errors, try alternative approaches
-        - Take screenshots to document the setup process
-        - Use XML-based element location when possible, only use coordinates as fallback
+        Guidelines:
+        - PRIORITIZE XML element location (dump_screen_xml) over screenshots
+        - Use screenshots only when XML fails or for final verification
+        - Grant all permissions, don't skip steps
+        - Output clean JSON only for actions
 
-        **If a required toggle (e.g., "Use ScamCheck") is visible but the switch itself is not detected in the element list, try to tap the likely switch area based on nearby elements such as the label text. You may estimate the button's position using the bounding box of the label and standard Android layouts.**
-
-        **For example, if "Use ScamCheck" appears as a `TextView`, and there is no `Switch` nearby, estimate the switch location to be on the same horizontal line and right-aligned (e.g., +700px on x-axis from the left of the text).**
-
-        The setup is complete when:
-        - All permissions have been granted
-        - The app is showing its main interface/home screen
-        - No more setup dialogs or permission requests are pending
-
-        Please proceed step by step and provide a summary of what was set up.
+        COMPLETION: Must take final screenshot/UI dump to verify main interface is reached before declaring setup complete.
+        OUTPUT: Provide detailed steps to speed up the next LLM approach."
         """
         try:
             setup_result = self.agent.invoke({"input": prompt})
             result = setup_result['output']
+            
+            self.take_screenshot("setup_checkpoint.png")
+            
             return result
             
         except Exception as e:
             print(f"Error during setup: {e}")
             return str(e)
+    
+    def take_screenshot(self, screenshot_name: str) -> str:
+        os.makedirs("screenshots", exist_ok=True)
+        screenshot_path = os.path.join("screenshots", screenshot_name)
+
+        result = subprocess.run([
+            "adb", "exec-out", "screencap", "-p"
+        ], capture_output=True, check=True)
+        
+        with open(screenshot_path, "wb") as f:
+            f.write(result.stdout)
+        
+        return screenshot_name
