@@ -2,9 +2,9 @@
   "mcpServers": {
     "mobile-mcp": {
       "type": "stdio",
-      "command": "python3",
+      "command": "uvx",
       "args": [
-        "/Users/eric_hung/Desktop/android-mcp/main.py"
+        "android-mobile-mcp"
       ]
     },
     "sleep": {
