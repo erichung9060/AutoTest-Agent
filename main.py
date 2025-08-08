@@ -6,7 +6,8 @@ from langgraph_core import LangGraphTestRunner
 from TestRail.utility import get_test_cases_description, upload_test_case_result, create_new_run
 
 from agents.setup import SetupAgent
-setup_agent = SetupAgent()
+app_config = os.getenv('APP_CONFIG', None)
+setup_agent = SetupAgent(app_config)
 result = setup_agent.run()
 
 
@@ -15,6 +16,7 @@ test_runner = LangGraphTestRunner()
 
 suite_id = os.environ.get('SUITE_ID')
 run_id = create_new_run(suite_id)
+# run_id = 811931
 test_cases = get_test_cases_description(run_id)
 
 results = []

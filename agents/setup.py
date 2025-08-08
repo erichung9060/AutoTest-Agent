@@ -3,13 +3,14 @@ from agents.Agent import ReActAgent
 import os
 
 class SetupAgent(ReActAgent):
-    def __init__(self, model="claude-4-sonnet"):
+    def __init__(self, app_config = None, model="claude-4-sonnet"):
         super().__init__(model)
+        self.app_config = app_config
         print(f"Initialized SetupAgent with model: {self.model}")
         
     def run(self) -> dict:
         prompt = f"""
-        You are a setup assistant using mobile MCP to control a phone. Set up all necessary permissions for the app.
+        You are a setup assistant using mobile MCP to control a phone.
 
         Tasks:
         1. Identify permission requests or setup prompts
@@ -26,6 +27,12 @@ class SetupAgent(ReActAgent):
         COMPLETION: Must take final screenshot/UI dump to verify main interface is reached before declaring setup complete.
         OUTPUT: Provide detailed steps to speed up the next LLM approach."
         """
+
+        if self.app_config:
+            prompt += f"\nApp Customize Configuration:\n{self.app_config}\n"
+
+        print(prompt)
+
         try:
             setup_result = self.agent.invoke({"input": prompt})
             result = setup_result['output']
