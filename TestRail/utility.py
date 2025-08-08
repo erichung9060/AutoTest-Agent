@@ -35,10 +35,27 @@ def get_test_cases_description(run_id):
     for case in test_cases['data']:
         try:
             title = case['title']
-            steps = case['custom_steps'].replace('\n', ', ').replace('\r', '')
-            expected = case['custom_expected'].replace('\n', ', ').replace('\r', '')
 
-            description = f"Steps: {steps}, \nExpected: {expected}"
+            description = ""
+            if case['custom_description']:
+                description += f"Description: {case['custom_description']}\n"
+
+            if case['custom_preconds']:
+                preconds = str(case['custom_preconds']).replace('\n', ', ').replace('\r', '')
+                description += f"Preconditions: {preconds}\n"
+
+            if case['custom_steps']:
+                steps = str(case['custom_steps']).replace('\n', ', ').replace('\r', '')
+                description += f"Steps: {steps}\n"
+
+            if case['custom_steps_separated']:
+                steps_separate = str(case['custom_steps_separated']).replace('\n', ', ').replace('\r', '')
+                description += f"Steps separated: {steps_separate}\n"
+
+            if case['custom_expected']:
+                expected = str(case['custom_expected']).replace('\n', ', ').replace('\r', '')
+                description += f"Expected: {expected}\n"
+
             result[title] = {"description": description, "case_id": case['case_id']}
             print(f"✅ Successfully fetched case {case['title']}")
         except Exception as e:
