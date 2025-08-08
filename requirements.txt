@@ -4,3 +4,4 @@ langchain
 langgraph
 requests
 robotframework-appiumlibrary
+uv

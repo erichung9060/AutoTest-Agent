@@ -60,7 +60,7 @@ class ReActAgent(Agent):
         
         from MCP.MCP_Manager import MCPManager
         self.mcp_manager = MCPManager()
-        self.tools = self.mcp_manager.get_all_tools()
+        self.tools = self.mcp_manager.tools
         
         react_agent = create_react_agent(self.llm, self.tools, prompt)
         

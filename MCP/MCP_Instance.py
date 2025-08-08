@@ -4,6 +4,7 @@ import re
 from typing import Dict, List, Any
 import json
 from langchain.tools import Tool
+import time
 
 class MCPInstance:
     def __init__(self, name: str, command: str, args: List[str]):
@@ -15,21 +16,24 @@ class MCPInstance:
         self.image_summarizer = ImageSummarizeAgent()
         
     def start(self):
-        try:
-            cmd = [self.command] + self.args
-            self.process = subprocess.Popen(
-                cmd,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                bufsize=1
-            )
-            print(f"MCP Server '{self.name}' started with command: {' '.join(cmd)}")
-            return True
-        except Exception as e:
-            print(f"Failed to start MCP Server '{self.name}': {e}")
-            return False
+        cmd = [self.command] + self.args
+        self.process = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1
+        )
+        print(f"MCP Server '{self.name}' started with command: {' '.join(cmd)}")
+        
+        time.sleep(1.5)
+        if self.process.poll() is not None:
+            exit_code = self.process.returncode
+            if exit_code != 0:
+                stderr_output = self.process.stderr.read()
+                print(f"MCP Server '{self.name}' error: {stderr_output}")
+                exit(1)
 
     def process_mcp_request(self, method: str, params: dict) -> dict:
         request = {
@@ -80,7 +84,7 @@ class MCPInstance:
             self.process.stdin.close()
             self.process.terminate()
 
-    def generate_tools(self) -> List[Tool]:
+    def get_tools(self) -> List[Tool]:
         try:
             init_request = {
                 "jsonrpc": "2.0",
@@ -126,7 +130,7 @@ class MCPInstance:
             return generated_tools
         except Exception as e:
             print(f"❌ Failed to generate tools for '{self.name}': {e}")
-            return []
+            exit(1)
 
     def preprocess_tool_input(self, tool_input):    
         try:

@@ -20,29 +20,20 @@ class MCPManager:
     def initialize_all_mcps(self):
         config = self.load_config()
         mcp_servers = config.get("mcpServers", {})
-
         print(f"🚀 Initializing {len(mcp_servers)} MCP servers...")
-        
+
+        self.tools = []
         for server_name, server_config in mcp_servers.items():
             command = server_config.get("command")
             args = server_config.get("args", [])
 
             mcp_instance = MCPInstance(server_name, command, args)
-            
-            if mcp_instance.start():
-                self.mcp_instances[server_name] = mcp_instance
-            else:
-                print(f"❌ Failed to start MCP server '{server_name}'")
-    
-    def get_all_tools(self) -> List[Tool]:
-        self.all_tools = []
-        
-        for instance in self.mcp_instances.values():
-            tools = instance.generate_tools()
-            self.all_tools.extend(tools)
-            
-        print(f"Total {len(self.all_tools)} tools loaded from {len(self.mcp_instances)} MCP servers")
-        return self.all_tools
+            mcp_instance.start()
+            self.tools.extend(mcp_instance.get_tools())
+            self.mcp_instances[server_name] = mcp_instance
+
+        print(f"Total {len(self.tools)} tools loaded from {len(self.mcp_instances)} MCP servers")
+
     
     def close_all(self):
         for instance in self.mcp_instances.values():
